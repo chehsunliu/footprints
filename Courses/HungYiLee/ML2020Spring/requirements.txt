@@ -77,11 +77,13 @@ prometheus-client==0.8.0  # via notebook
 prompt-toolkit==3.0.5     # via ipython
 protobuf==3.12.4          # via tensorboard, tensorflow
 ptyprocess==0.6.0         # via pexpect, terminado
+py4j==0.10.7              # via pyspark
 pycparser==2.20           # via cffi
 pyglet==1.5.0             # via gym
 pygments==2.6.1           # via ipython, nbconvert
 pyparsing==2.4.7          # via matplotlib, packaging
 pyrsistent==0.16.0        # via jsonschema
+pyspark==2.4.5            # via -r requirements.in
 python-dateutil==2.8.1    # via botocore, jupyter-client, kaggle, matplotlib, pandas
 python-slugify==4.0.1     # via kaggle
 pytz==2020.1              # via pandas

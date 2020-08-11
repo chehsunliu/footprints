@@ -18,3 +18,4 @@ tqdm==4.28.1
 
 jupyterlab
 kaggle
+pyspark==2.4.5
