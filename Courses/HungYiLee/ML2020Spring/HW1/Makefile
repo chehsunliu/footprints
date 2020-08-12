@@ -1,10 +1,14 @@
-.PHONY: compile
-compile: hw1.pdf
+%.pdf: %.tex
+	@echo "> Compile $<"
+	@xelatex -output-directory=`dirname $@` $<
 
-hw1.pdf: hw1.tex
-	xelatex $^
-
+.PHONY: docs
+docs: ./docs/hw1.pdf
 
 .PHONY: clean
-clean:
-	rm -f hw1.aux hw1.log hw1.toc missfont.log
+clean: clean-docs
+
+.PHONY: clean-docs
+clean-docs:
+	@echo "> Clean document temporary files"
+	@rm -rf ./docs/*.aux ./docs/*.log
