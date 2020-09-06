@@ -3,34 +3,10 @@ from typing import TextIO
 
 
 def main(f: TextIO):
-    t: int = int(f.readline())
+    f.readline()
 
-    for _ in range(t):
-        activities_raw, origin = f.readline().split(maxsplit=2)
-        activities = int(activities_raw)
-        laddus = 0
-
-        for _ in range(activities):
-            line = f.readline()
-
-            if line.startswith("CONTEST_WON"):
-                _, rank_raw = line.split()
-                laddus += 300 + max(20 - int(rank_raw), 0)
-
-            elif line.startswith("TOP_CONTRIBUTOR"):
-                laddus += 300
-
-            elif line.startswith("BUG_FOUND"):
-                _, severity_raw = line.split()
-                laddus += int(severity_raw)
-
-            else:
-                laddus += 50
-
-        if origin == "INDIAN":
-            print(laddus // 200)
-        else:
-            print(laddus // 400)
+    for line in f:
+        k, d0, d1 = [int(raw) for raw in line.split()]
 
 
 if __name__ == "__main__":
