@@ -1,6 +1,6 @@
-## Unsolved Problems
+# Unsolved Problems
 
-### CodeChef
+## CodeChef
 
 | Contest                         | Code       | Date       |
 | -------                         | ----       | ----       |
