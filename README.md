@@ -1,3 +1,3 @@
 # footprints
 
-For courses and contests.
+Few courses.
