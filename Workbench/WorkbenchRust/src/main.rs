@@ -1,5 +1,5 @@
-use std::process;
 use std::io;
+use std::process;
 
 struct Company {
     day: i32,
@@ -15,8 +15,13 @@ fn solve(mut companies: [Company; 2], mut goals: i32) -> i32 {
         let extra_days = companies[1].day - companies[0].day;
 
         if goals <= extra_days * companies[0].vaccines_per_day {
-            return answers + goals / companies[0].vaccines_per_day +
-                if goals % companies[0].vaccines_per_day > 0 { 1 } else { 0 };
+            return answers
+                + goals / companies[0].vaccines_per_day
+                + if goals % companies[0].vaccines_per_day > 0 {
+                    1
+                } else {
+                    0
+                };
         }
 
         goals -= extra_days * companies[0].vaccines_per_day;
@@ -54,7 +59,7 @@ fn main() {
             Company {
                 day: words[2].parse().unwrap(),
                 vaccines_per_day: words[3].parse().unwrap(),
-            }
+            },
         ];
 
         println!("{}", solve(companies, words[4].parse().unwrap()));
