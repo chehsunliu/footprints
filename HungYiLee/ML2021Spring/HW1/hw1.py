@@ -54,61 +54,61 @@ features = [
     "MS", "MO", "NE", "NV", "NJ", "NM", "NY", "NC", "OH", "OK",
     "OR", "PA", "RI", "SC", "TX", "UT", "VA", "WA", "WV", "WI",
 
-    #     "cli",
-    #     "ili",
-    #     "hh_cmnty_cli",
-    #     "nohh_cmnty_cli",
-    #     "wearing_mask",
-    #     "travel_outside_state",
-    #     "work_outside_home",
-    #     "shop",
-    #     "restaurant",
-    #     "spent_time",
-    #     "large_event",
-    #     "public_transit",
-    #     "anxious",
-    #     "depressed",
-    #     "felt_isolated",
-    #     "worried_become_ill",
-    #     "worried_finances",
+    # "cli",
+    # "ili",
+    # "hh_cmnty_cli",
+    # "nohh_cmnty_cli",
+    # "wearing_mask",
+    # "travel_outside_state",
+    # "work_outside_home",
+    # "shop",
+    # "restaurant",
+    # "spent_time",
+    # "large_event",
+    # "public_transit",
+    # "anxious",
+    # "depressed",
+    # "felt_isolated",
+    # "worried_become_ill",
+    # "worried_finances",
     "tested_positive",
 
-    #     "cli.1",
-    #     "ili.1",
-    #     "hh_cmnty_cli.1",
-    #     "nohh_cmnty_cli.1",
-    #     "wearing_mask.1",
-    #     "travel_outside_state.1",
-    #     "work_outside_home.1",
-    #     "shop.1",
-    #     "restaurant.1",
-    #     "spent_time.1",
-    #     "large_event.1",
-    #     "public_transit.1",
-    #     "anxious.1",
-    #     "depressed.1",
-    #     "felt_isolated.1",
-    #     "worried_become_ill.1",
-    #     "worried_finances.1",
+    # "cli.1",
+    # "ili.1",
+    # "hh_cmnty_cli.1",
+    # "nohh_cmnty_cli.1",
+    # "wearing_mask.1",
+    # "travel_outside_state.1",
+    # "work_outside_home.1",
+    # "shop.1",
+    # "restaurant.1",
+    # "spent_time.1",
+    # "large_event.1",
+    # "public_transit.1",
+    # "anxious.1",
+    # "depressed.1",
+    # "felt_isolated.1",
+    # "worried_become_ill.1",
+    # "worried_finances.1",
     "tested_positive.1",
 
-    #     "cli.2",
-    #     "ili.2",
-    #     "hh_cmnty_cli.2",
-    #     "nohh_cmnty_cli.2",
-    #     "wearing_mask.2",
-    #     "travel_outside_state.2",
-    #     "work_outside_home.2",
-    #     "shop.2",
-    #     "restaurant.2",
-    #     "spent_time.2",
-    #     "large_event.2",
-    #     "public_transit.2",
-    #     "anxious.2",
-    #     "depressed.2",
-    #     "felt_isolated.2",
-    #     "worried_become_ill.2",
-    #     "worried_finances.2",
+    # "cli.2",
+    # "ili.2",
+    # "hh_cmnty_cli.2",
+    # "nohh_cmnty_cli.2",
+    # "wearing_mask.2",
+    # "travel_outside_state.2",
+    # "work_outside_home.2",
+    # "shop.2",
+    # "restaurant.2",
+    # "spent_time.2",
+    # "large_event.2",
+    # "public_transit.2",
+    # "anxious.2",
+    # "depressed.2",
+    # "felt_isolated.2",
+    # "worried_become_ill.2",
+    # "worried_finances.2",
 ]
 
 
@@ -116,6 +116,9 @@ class Covid19Dataset(Dataset):
     def __init__(self, data, labels=None):
         self.data = data
         self.labels = labels
+
+        self.data_mean = data.mean(dim=0, keepdim=True)
+        self.data_std = data.std(dim=0, keepdim=True)
 
         logger.info("data: %s", self.data.shape)
         if self.labels is not None:
@@ -129,6 +132,12 @@ class Covid19Dataset(Dataset):
             return self.data[idx], self.labels[idx]
         return self.data[idx]
 
+    def normalize(self) -> None:
+        self.data[:, 40:] = (self.data[:, 40:] - self.data_mean[:, 40:]) / self.data_std[:, 40:]
+
+    def normalize_by(self, other: 'Covid19Dataset') -> None:
+        self.data[:, 40:] = (self.data[:, 40:] - other.data_mean[:, 40:]) / other.data_std[:, 40:]
+
     @property
     def dimension(self) -> int:
         return self.data.shape[1]
@@ -140,7 +149,6 @@ class Covid19Dataset(Dataset):
         original_data = pandas.read_csv(filepath)
 
         data = torch.FloatTensor(original_data[features].values)
-        data[:, 40:] = (data[:, 40:] - data[:, 40:].mean(dim=0, keepdim=True)) / data[:, 40:].std(dim=0, keepdim=True)
 
         if not is_training:
             return cls(data=data)
@@ -148,8 +156,6 @@ class Covid19Dataset(Dataset):
         labels = torch.FloatTensor(original_data["tested_positive.2"].values)
 
         total_rows = len(data)
-        # indexes1 = random.sample(range(total_rows), total_rows // 10)
-        # indexes0 = [index for index in range(total_rows) if index not in indexes1]
         indexes1 = [i for i in range(total_rows) if i % 10 == 0]
         indexes0 = [i for i in range(total_rows) if i % 10 != 0]
 
@@ -169,9 +175,9 @@ class NeuralNetwork(nn.Module):
         super().__init__()
 
         self.model = nn.Sequential(
-            nn.Linear(input_dimension, 64),
+            nn.Linear(input_dimension, 42),
             nn.ReLU(),
-            nn.Linear(64, 1),
+            nn.Linear(42, 1),
         )
 
         self.loss_function = nn.MSELoss(reduction="mean")
